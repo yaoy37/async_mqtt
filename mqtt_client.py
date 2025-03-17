@@ -32,10 +32,11 @@ class MQTTClient:
             if msg.topic.endswith('/audio'):
                 self.audio_processor.add_audio_data(msg.payload)
                 if audio_chunk := self.audio_processor.get_audio_chunk():
-                    translation = self.process_audio(audio_chunk)
+                    original_text, translation = self.process_audio(audio_chunk)
                     if translation != "Translation failed":
-                        self.translation_buffer.append(translation)
-                        print(f"New translation: {translation}")
+                        self.translation_buffer.append((original_text, translation))
+                        print(f"原文: {original_text}")
+                        print(f"翻译: {translation}")
             else:
                 # Handle regular JSON data
                 self.latest_data = json.loads(msg.payload.decode())
